@@ -4,4 +4,7 @@ This provides control of DMX fixtures from a web browser on any device. The serv
 ## Supported Adapters
 - USB to DMX adapter with FTDI chip
 
+## IMPORTANT
+- running with Node requires the Visual Studio "Desktop development with C++" workload to be installed.
+
 Currently there is not a release of this because it is not functional yet.

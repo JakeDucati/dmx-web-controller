@@ -1,21 +1,20 @@
-// pages/api/dmx.ts
 import { NextApiRequest, NextApiResponse } from 'next';
 import { SerialPort } from 'serialport';
 
-const PORT_NAME = 'COM3'; // Update as per your DMX adapter's port
+const PORT_NAME = 'COM3'; // DMX adapter location
 const BAUD_RATE = 250000; // DMX512 baud rate (250 kbps)
 const DMX_CHANNELS = 512;
-const UPDATE_RATE_HZ = 30; // Set to 30Hz refresh rate
+const UPDATE_RATE_HZ = 30; // 30Hz default
 
 const BREAK_DURATION = 176; // Break duration in microseconds
 const MAB_DURATION = 12; // Mark after break duration in microseconds
-const FRAME_DELAY = 1000 / UPDATE_RATE_HZ; // Time between frames, in milliseconds
+const FRAME_DELAY = 1000 / UPDATE_RATE_HZ; // Time between frames in milliseconds
 
 const dmxData = new Uint8Array(DMX_CHANNELS).fill(0);
-dmxData[0] = 0; // DMX start code (0x00)
+dmxData[0] = 0;   // DMX start code (0x00)
 dmxData[1] = 255; // Channel 1 set to 255
 dmxData[2] = 255; // Channel 2 set to 255
-dmxData[3] = 50; // Channel 3 set to 255
+dmxData[3] = 50;  // Channel 3 set to 255
 dmxData[4] = 200; // Channel 4 set to 255
 
 let port: SerialPort | null = null;

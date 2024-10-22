@@ -103,7 +103,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             cors: {
                 origin: '*',
             },
-        });        
+        });
 
         // Updated connection handler
         io.on('connection', (socket) => {

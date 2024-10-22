@@ -16,7 +16,7 @@ const DMXControl: React.FC = () => {
             setSocket(newSocket);
         });
 
-        newSocket.on('disconnect', () => {
+        newSocket.on('disconnection', () => {
             console.log('Socket.IO disconnected');
             setSocket(null);
         });

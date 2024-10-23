@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { io, Socket } from '@/node_modules/socket.io-client';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const DMXControl: React.FC = () => {
     const [dmxValues, setDmxValues] = useState<number[]>(Array(512).fill(0));
@@ -8,25 +10,28 @@ const DMXControl: React.FC = () => {
 
     useEffect(() => {
         const newSocket = io('http://localhost:3000', {
-            path: '/api/socketio', // Update this path to match the server
+            path: '/api/socketio', // Match the server path
         });
-
-        newSocket.on('connection', (newSocket) => {
-            console.log('Socket.IO connected');
-            setSocket(newSocket);
+    
+        newSocket.on('connect', () => {
+            console.log('Socket.IO connected', newSocket.id);
+            setSocket(newSocket);  // Set the socket in the state
+            toast("Socket connected!");
         });
-
-        newSocket.on('disconnection', () => {
+    
+        newSocket.on('disconnect', () => {
             console.log('Socket.IO disconnected');
-            setSocket(null);
+            setSocket(null);  // Clear socket on disconnect
+            toast("Socket disconnected!");
         });
-
+    
         newSocket.on('connect_error', (err) => {
             console.error('Connection error:', err);
+            toast("Socket connection error!");
         });
-
+    
         return () => {
-            newSocket.disconnect(); // Cleanup on unmount
+            newSocket.disconnect();  // Clean up on component unmount
         };
     }, []);
 
@@ -37,15 +42,16 @@ const DMXControl: React.FC = () => {
         setDmxValues(newValues);
 
         if (socket && socket.connected) {
-            console.log('Socket is connected. Sending DMX values:', newValues); // Log the values being sent
             socket.emit('dmxUpdate', { dmxValues: newValues });
         } else {
             console.warn('Socket is not connected. Cannot send DMX values.');
+            toast("Socket is not connected. Cannot send DMX values.");
         }
     };
 
     return (
         <div>
+            <ToastContainer closeOnClick theme='dark'  autoClose={2400} />
             <h1>DMX Control</h1>
             <div>
                 {socket ? (

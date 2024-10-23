@@ -101,7 +101,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const io = new SocketIOServer(server, {
             path: '/api/socketio', // Custom path for Socket.IO
             cors: {
-                origin: '*',
+                origin: 'http://localhost:3000',
+                methods: ['GET', 'POST'],
+                allowedHeaders: ['Content-Type'],
+                credentials: true,
             },
         });
 
@@ -109,18 +112,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         io.on('connection', (socket) => {
             console.log('Socket.IO connection established', socket.id);
 
-            // If you need to access the server, you can use 'io' directly
-            // For example, you can broadcast messages to all connected sockets
-            // io.emit('someEvent', { message: 'Hello everyone!' });
-
             socket.on('disconnect', () => {
                 console.log('Socket.IO connection closed', socket.id);
             });
 
             socket.on('dmxUpdate', (data: { dmxValues: number[] }) => {
                 if (Array.isArray(data.dmxValues) && data.dmxValues.length === DMX_CHANNELS) {
-                    dmxData = new Uint8Array(data.dmxValues); // Update DMX data
-                    console.log('DMX data updated:', dmxData); // Log the updated DMX data
+                    dmxData = new Uint8Array(data.dmxValues);
+                    dmxData[0] = 0;
                 } else {
                     console.warn('Received invalid DMX values:', data.dmxValues);
                 }

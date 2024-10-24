@@ -39,7 +39,7 @@ const DMXControl: React.FC = () => {
     }, []);
 
     // Function to handle slider change for each channel
-    const handleSliderChange = (channel: number, value: number | number[]) => {
+    const handleSliderChange = async (channel: number, value: number | number[]) => {
         const newValue = Array.isArray(value) ? value[0] : value;
         const newValues = [...dmxValues];
         newValues[channel] = newValue;
@@ -59,9 +59,9 @@ const DMXControl: React.FC = () => {
             <h1>DMX Control</h1>
             <div>
                 {socket ? (
-                    <span style={{ color: 'green' }}>Connected</span>
+                    <span className='text-green-600'>Connected</span>
                 ) : (
-                    <span style={{ color: 'red' }}>Disconnected</span>
+                    <span className='text-red-600'>Disconnected</span>
                 )}
             </div>
             <div className="flex overflow-x-scroll min-h-96">
@@ -76,7 +76,7 @@ const DMXControl: React.FC = () => {
                             orientation="vertical"
                             aria-label="DMX Value"
                             defaultValue={0}
-                            onChange={(newValue) => handleSliderChange(index, newValue)}
+                            onChangeEnd={(newValue) => handleSliderChange(index, newValue)}
                         />
                         <span>{value}</span>
                     </div>

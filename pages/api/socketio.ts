@@ -116,12 +116,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 console.log('Socket.IO connection closed', socket.id);
             });
 
-            socket.on('dmxUpdate', (data: { dmxValues: number[] }) => {
-                if (Array.isArray(data.dmxValues) && data.dmxValues.length === DMX_CHANNELS) {
-                    dmxData = new Uint8Array(data.dmxValues);
-                    dmxData[0] = 0;
+            socket.on('dmxUpdate', (data: { channel: number; value: number }) => {
+                const { channel, value } = data;
+                
+                // Ensure channel is within valid range and value is valid
+                if (channel >= 0 && channel < DMX_CHANNELS && value >= 0 && value <= 255) {
+                    dmxData[channel] = value; // Update only the specific channel
                 } else {
-                    console.warn('Received invalid DMX values:', data.dmxValues);
+                    console.warn('Received invalid DMX channel or value:', channel, value);
                 }
             });
         });

@@ -3,10 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import { io, Socket } from '@/node_modules/socket.io-client';
 import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-// import { Slider } from '@nextui-org/react';
-import Slider from 'rc-slider';
-import 'rc-slider/assets/index.css';
 
 export default function SimpleDesk() {
     const [dmxValues, setDmxValues] = useState<number[]>(Array(512).fill(0));
@@ -62,7 +58,6 @@ export default function SimpleDesk() {
 
     return (
         <>
-            <ToastContainer closeOnClick theme='dark' autoClose={2400} closeButton={false} />
             <h1>DMX Control</h1>
             <div>
                 {socket ? (
@@ -72,35 +67,18 @@ export default function SimpleDesk() {
                 )}
             </div>
             <div className="flex overflow-x-scroll min-h-96">
-                {dmxValues.map((value = 0, index) => (
-                    <div key={index} className="flex flex-col items-center min-h-full">
+                {dmxValues.map((value, index) => (
+                    <div key={index} className="flex flex-col items-center min-h-full -mr-64">
                         <label>{index + 1}</label>
-                        {/* <Slider
-                            size="lg"
-                            step={1}
-                            maxValue={255}
-                            minValue={0}
-                            orientation="vertical"
-                            aria-label="DMX Value"
-                            defaultValue={0}
-                            onChangeEnd={(newValue) => handleSliderChange(index, newValue)}
-                        /> */}
-                        <Slider
-                            vertical
-                            min={0}
-                            max={255}
-                            keyboard
-                            onChange={(newValue) => handleSliderChange(index, newValue)}
-                        />
-                        {/* <input
+                        <input
                             type="range"
-                            min={0}
-                            max={255}
-                            value={dmxValues[index]}
+                            min="0"
+                            max="255"
+                            value={value}
                             onChange={(e) => handleSliderChange(index, +e.target.value)}
-                            className='writing translate-y-7'
-                        /> */}
-                        <span className='translate-y-14'>{value}</span>
+                            className="w-72 h-2 transform -rotate-90 mt-[140px]"
+                        />
+                        <span className='mt-[140px]'>{value}</span>
                     </div>
                 ))}
             </div>

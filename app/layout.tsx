@@ -9,6 +9,8 @@ import { fontSans } from "@/config/fonts";
 import NavHeader from "@/components/navHeader";
 import Fixtures from "@/components/fixtures";
 import Functions from "@/components/functions";
+import { ToastContainer } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
 export const metadata: Metadata = {
     title: {
@@ -47,6 +49,7 @@ export default function RootLayout({
                         <NavHeader />
                         <Fixtures />
                         <Functions />
+                        <ToastContainer closeOnClick theme='dark' autoClose={2400} closeButton={false} />
                         <main className="container mx-auto max-w-7xl pt-16 px-6 flex-grow">
                             {children}
                         </main>

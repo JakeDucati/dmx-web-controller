@@ -4,12 +4,13 @@ import React, { useState, useEffect } from 'react';
 import { io, Socket } from '@/node_modules/socket.io-client';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { Slider } from '@nextui-org/react';
+// import { Slider } from '@nextui-org/react';
+import Slider from 'rc-slider';
+import 'rc-slider/assets/index.css';
 
-const DMXControl: React.FC = () => {
+export default function SimpleDesk() {
     const [dmxValues, setDmxValues] = useState<number[]>(Array(512).fill(0));
     const [socket, setSocket] = useState<Socket | null>(null);
-    // const channelLabels = ['Red Light', 'Green Light', 'Blue Light', 'Strobe'];
 
     useEffect(() => {
         const newSocket = io('http://localhost:3000', {
@@ -30,21 +31,27 @@ const DMXControl: React.FC = () => {
 
         newSocket.on('connect_error', (err) => {
             console.error('Connection error:', err);
-            toast("Socket Connection Error | " + err);
+            toast("Socket Failed To Connect | " + err);
         });
 
         return () => {
-            newSocket.disconnect();  // Clean up on component unmount
+            newSocket.disconnect(); // Clean up on component unmount
         };
     }, []);
 
     // Function to handle slider change for each channel
     const handleSliderChange = async (channel: number, value: number | number[]) => {
         const newValue = Array.isArray(value) ? value[0] : value;
-        const newValues = [...dmxValues];
-        newValues[channel] = newValue;
-        setDmxValues(newValues);
-    
+
+        requestAnimationFrame(() => {
+            setDmxValues(prevValues => {
+                const newValues = [...prevValues];
+                newValues[channel] = newValue;
+                return newValues;
+            });
+        });
+
+        // Send the WebSocket event
         if (socket && socket.connected) {
             socket.emit('dmxUpdate', { channel, value: newValue });
         } else {
@@ -52,7 +59,7 @@ const DMXControl: React.FC = () => {
             toast("Socket is not connected. Cannot send DMX values.");
         }
     };
-    
+
     return (
         <>
             <ToastContainer closeOnClick theme='dark' autoClose={2400} closeButton={false} />
@@ -66,9 +73,9 @@ const DMXControl: React.FC = () => {
             </div>
             <div className="flex overflow-x-scroll min-h-96">
                 {dmxValues.map((value = 0, index) => (
-                    <div key={index} className="flex flex-col items-center">
+                    <div key={index} className="flex flex-col items-center min-h-full">
                         <label>{index + 1}</label>
-                        <Slider
+                        {/* <Slider
                             size="lg"
                             step={1}
                             maxValue={255}
@@ -77,13 +84,26 @@ const DMXControl: React.FC = () => {
                             aria-label="DMX Value"
                             defaultValue={0}
                             onChangeEnd={(newValue) => handleSliderChange(index, newValue)}
+                        /> */}
+                        <Slider
+                            vertical
+                            min={0}
+                            max={255}
+                            keyboard
+                            onChange={(newValue) => handleSliderChange(index, newValue)}
                         />
-                        <span>{value}</span>
+                        {/* <input
+                            type="range"
+                            min={0}
+                            max={255}
+                            value={dmxValues[index]}
+                            onChange={(e) => handleSliderChange(index, +e.target.value)}
+                            className='writing translate-y-7'
+                        /> */}
+                        <span className='translate-y-14'>{value}</span>
                     </div>
                 ))}
             </div>
         </>
     );
 };
-
-export default DMXControl;

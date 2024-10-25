@@ -10,7 +10,6 @@ import NavHeader from "@/components/navHeader";
 import Fixtures from "@/components/fixtures";
 import Functions from "@/components/functions";
 
-
 export const metadata: Metadata = {
     title: {
         default: siteConfig.name,

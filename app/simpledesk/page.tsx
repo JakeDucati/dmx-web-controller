@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import useSocket from '@/hooks/useSocket';
 import { toast } from 'react-toastify';
-import { ScrollShadow } from '@nextui-org/react';
+import { Button, ScrollShadow } from '@nextui-org/react';
 
 export default function SimpleDesk() {
     const [dmxValues, setDmxValues] = useState<number[]>(Array(512).fill(0));
@@ -31,10 +31,17 @@ export default function SimpleDesk() {
     };
 
     return (
-        <>
+        <div>
+            <Button
+                onClick={() => {setDmxValues(Array(dmxValues.length).fill(0));}}
+                className='min-w-8 min-h-8 rounded-full mb-4'
+                color='primary'
+                title='Reset All Values'
+            >X</Button>
+
             <ScrollShadow orientation='horizontal' className="flex overflow-x-scroll min-h-80">
                 {dmxValues.map((value, index) => (
-                    <div key={index} className="flex flex-col items-center min-h-full -mr-64 -translate-x-32">
+                    <div key={index} className="flex flex-col items-center min-h-full max-w-8">
                         <label>{index + 1}</label>
                         <input
                             type="range"
@@ -48,6 +55,6 @@ export default function SimpleDesk() {
                     </div>
                 ))}
             </ScrollShadow>
-        </>
+        </div>
     );
 };

@@ -1,5 +1,9 @@
+import { Sidebar } from "react-pro-sidebar";
+
 export default function Fixtures() {
     return (
-        <div></div>
+        <Sidebar>
+            
+        </Sidebar>
     );
 }

@@ -48,7 +48,7 @@ export default function RootLayout({
                 <Providers themeProps={{ attribute: "class", defaultTheme: "dark" }}>
                     <div className="relative flex flex-col h-screen">
                         <NavHeader />
-                        <Fixtures />
+                        {/* <Fixtures /> */}
                         <Functions />
                         <main className="container mx-auto max-w-7xl pt-16 px-6 flex-grow">
                             <ToastContainer closeOnClick theme='dark' autoClose={2400} closeButton={false} />

@@ -3,10 +3,12 @@
 import { Button } from "@nextui-org/button";
 import { Input } from "@nextui-org/input";
 import { Tooltip } from "@nextui-org/react";
+import Image from "next/image";
 import { useState } from "react";
 
+
 export default function SideWindow() {
-    const [width, setWidth] = useState(300); // Initial width
+    const [width, setWidth] = useState(0); // Initial width
 
     // Handles resizing the sidebar by dragging
     const handleMouseDown = (e: React.MouseEvent) => {
@@ -29,23 +31,17 @@ export default function SideWindow() {
 
     return (
         <div
-            className="fixed top-0 left-0 h-full flex items-center z-10"
-            style={{ width: `${width}px`, transition: "width 0.3s ease" }}
+            className="fixed top-0 left-0 h-full flex items-center z-50"
+            style={{ width: `${width}px` }}
         >
             {/* Sidebar content */}
             <div
-                className={`bg-gray-800 h-full text-white flex flex-col ${width === 0 ? "hidden" : ""
-                    }`}
+                className={`bg-gray-800 h-full text-white flex flex-col ${width === 0 ? "hidden" : ""}`}
                 style={{ width: width > 20 ? "100%" : "0" }}
             >
 
                 {/* Search Bar */}
                 <div className="p-2">
-                    {/* <input
-                        type="text"
-                        placeholder="Search..."
-                        className="w-full p-1 rounded bg-gray-700 text-white focus:outline-none"
-                    /> */}
                     <Input
                         type="search"
                         label="Search"
@@ -56,12 +52,12 @@ export default function SideWindow() {
                 <div className="flex-grow overflow-y-auto p-2">
                     <ul className="space-y-1">
                         {Array.from({ length: 50 }, (_, i) => (
-                            <li
+                            <Button
                                 key={i}
-                                className="p-2 bg-gray-700 hover:bg-gray-600 rounded cursor-pointer"
+                                className="p-2 w-full"
                             >
-                                Item {i + 1}
-                            </li>
+                                Fixture {i + 1}
+                            </Button>
                         ))}
                     </ul>
                 </div>
@@ -69,17 +65,36 @@ export default function SideWindow() {
 
             {/* Resize handle */}
             <div
-                className="w-16 h-full cursor-ew-resize bg-slate-800 flex flex-col items-center pt-2"
+                className="w-16 h-full cursor-ew-resize bg-slate-800 flex flex-col items-center pt-4"
                 onMouseDown={handleMouseDown}
             >
                 <Tooltip
                     placement="right"
                     content="Add Fixture"
-                >
-                <Button
-                    className="rounded-full min-w-4 min-h-4"
                     color="primary"
-                >+</Button>
+                >
+                    <Button
+                        className="rounded-full min-w-4 min-h-4 mb-2"
+                        color="primary"
+                    >+</Button>
+                </Tooltip>
+
+                <Tooltip
+                    placement="right"
+                    content="Fixtures"
+                    color="primary"
+                >
+                    <Button
+                        className="rounded-full min-w-4 min-h-4"
+                        color="primary"
+                    >
+                        <Image
+                            src={"/icons/bulb.svg"}
+                            width={40}
+                            height={40}
+                            alt="Fixtures"
+                        />
+                    </Button>
                 </Tooltip>
             </div>
         </div>

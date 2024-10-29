@@ -49,7 +49,7 @@ export default function RootLayout({
                         <NavHeader />
                         <Fixtures />
                         <Functions />
-                        <main className="container mx-auto max-w-7xl pt-16 px-6 flex-grow">
+                        <main className="container mx-auto max-w-6xl pt-16 px-6 flex-grow">
                             <ToastContainer closeOnClick theme='dark' autoClose={2400} closeButton={false} />
 
                             {children}

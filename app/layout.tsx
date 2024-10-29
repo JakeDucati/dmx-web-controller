@@ -11,7 +11,6 @@ import Fixtures from "@/components/fixtures";
 import Functions from "@/components/functions";
 import { ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
-import useSocket from "@/hooks/useSocket";
 
 export const metadata: Metadata = {
     title: {
@@ -48,7 +47,7 @@ export default function RootLayout({
                 <Providers themeProps={{ attribute: "class", defaultTheme: "dark" }}>
                     <div className="relative flex flex-col h-screen">
                         <NavHeader />
-                        {/* <Fixtures /> */}
+                        <Fixtures />
                         <Functions />
                         <main className="container mx-auto max-w-7xl pt-16 px-6 flex-grow">
                             <ToastContainer closeOnClick theme='dark' autoClose={2400} closeButton={false} />

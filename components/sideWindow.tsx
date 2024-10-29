@@ -65,37 +65,52 @@ export default function SideWindow() {
 
             {/* Resize handle */}
             <div
-                className="w-16 h-full cursor-ew-resize bg-slate-800 flex flex-col items-center pt-4"
+                className="w-16 h-full cursor-ew-resize bg-slate-800 flex flex-col justify-between pt-4"
                 onMouseDown={handleMouseDown}
             >
-                <Tooltip
-                    placement="right"
-                    content="Add Fixture"
-                    color="primary"
-                >
-                    <Button
-                        className="rounded-full min-w-4 min-h-4 mb-2"
-                        color="primary"
-                    >+</Button>
-                </Tooltip>
-
-                <Tooltip
-                    placement="right"
-                    content="Fixtures"
-                    color="primary"
-                >
-                    <Button
-                        className="rounded-full min-w-4 min-h-4"
+                <div className="flex flex-col items-center">
+                    <Tooltip
+                        placement="right"
+                        content="Add Fixture"
                         color="primary"
                     >
-                        <Image
-                            src={"/icons/bulb.svg"}
-                            width={40}
-                            height={40}
-                            alt="Fixtures"
-                        />
-                    </Button>
-                </Tooltip>
+                        <Button
+                            className="rounded-full min-w-4 min-h-4 mb-2"
+                            color="primary"
+                        >+</Button>
+                    </Tooltip>
+
+                    <Tooltip
+                        placement="right"
+                        content="Fixtures"
+                        color="primary"
+                    >
+                        <Button
+                            className="rounded-full min-w-4 min-h-4 mb-2"
+                            color="primary"
+                        >
+                            <Image
+                                src={"/icons/bulb.svg"}
+                                width={20}
+                                height={20}
+                                alt="Fixtures"
+                                className="min-w-[20px] min-h-[20px]"
+                            />
+                        </Button>
+                    </Tooltip>
+                </div>
+                <div className="flex flex-col items-center">
+                    <Tooltip
+                        placement="right"
+                        content="Something"
+                        color="primary"
+                    >
+                        <Button
+                            className="rounded-full min-w-4 min-h-4 mb-2"
+                            color="primary"
+                        >=</Button>
+                    </Tooltip>
+                </div>
             </div>
         </div>
     );

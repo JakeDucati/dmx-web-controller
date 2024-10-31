@@ -1,30 +1,104 @@
 "use client";
-import { Card, CardBody, Tab, Tabs } from "@nextui-org/react";
-import { usePathname } from "next/navigation";
+import { Card, CardBody, CardHeader, Divider, Input, Switch, Tab, Tabs } from "@nextui-org/react";
 
 export default function Config() {
-    const pathname = usePathname();
-
     return (
-        <Tabs placement="start" selectedKey={pathname}>
-            <Tab key="dmx" title="DMX" href="dmx">
+        <Tabs placement="start">
+            <Tab key="dmx" title="DMX" className="w-full">
                 <Card>
+                    <CardHeader>
+                        DMX Settings
+                    </CardHeader>
+                    <Divider />
                     <CardBody>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                        <div className="flex justify-between items-center h-14">
+                            <span>
+                                Adapter Location
+                            </span>
+                            <span>
+                                <Input
+                                    type="text"
+                                    label="Location"
+                                    className="max-h-12"
+                                />
+                            </span>
+                        </div>
+                        <div className="flex justify-between items-center h-14">
+                            <span>
+                                Baud Rate
+                            </span>
+                            <span>
+                                <Input
+                                    type="text"
+                                    label="Baud Rate"
+                                    className="max-h-12"
+                                />
+                            </span>
+                        </div>
+                        <div className="flex justify-between items-center h-14">
+                            <span>
+                                Frequency
+                            </span>
+                            <span>
+                                <Input
+                                    type="text"
+                                    label="Frequency"
+                                    className="max-h-12"
+                                />
+                            </span>
+                        </div>
                     </CardBody>
                 </Card>
             </Tab>
-            <Tab key="audio" title="Audio" href="audio">
+            <Tab key="audio" title="Audio" className="w-full">
                 <Card>
+                    <CardHeader>
+                        Audio Settings
+                    </CardHeader>
+                    <Divider />
                     <CardBody>
-                        Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+                        <div className="flex justify-between items-center h-14">
+                            <span>
+                                Output On Server
+                            </span>
+                            <span>
+                                <Switch />
+                            </span>
+                        </div>
+                        <div className="flex justify-between items-center h-14">
+                            <span>
+                                Output On Client
+                            </span>
+                            <span>
+                                <Switch />
+                            </span>
+                        </div>
                     </CardBody>
                 </Card>
             </Tab>
-            <Tab key="other" title="Other" href="other">
+            <Tab key="other" title="Other" className="w-full">
                 <Card>
+                    <CardHeader>
+                        Other Settings
+                    </CardHeader>
+                    <Divider />
                     <CardBody>
-                        Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                        <div className="flex justify-between items-center h-14">
+                            <span>
+                                Something
+                            </span>
+                            <span>
+                                <Switch />
+                            </span>
+                        </div>
+                        <div className="flex justify-between items-center h-14">
+                            <span>
+                                Something
+                            </span>
+                            <span>
+                                <Switch />
+                            </span>
+                        </div>
                     </CardBody>
                 </Card>
             </Tab>

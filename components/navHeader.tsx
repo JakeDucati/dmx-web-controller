@@ -22,6 +22,11 @@ export default function NavHeader() {
                     )}
                 </NavbarItem>
                 <NavbarItem>
+                    <Link color="foreground" href="/fixtures-functions">
+                        Fixtures & Functions
+                    </Link>
+                </NavbarItem>
+                <NavbarItem>
                     <Link color="foreground" href="/simpledesk">
                         Simple Desk
                     </Link>
@@ -36,17 +41,6 @@ export default function NavHeader() {
                         Config
                     </Link>
                 </NavbarItem>
-                {/* <Tabs aria-label="Options" selectedKey={pathname}>
-                    <Tab key="simpledesk" title="Simple Desk" href="/simpledesk">
-                        Simple Desk
-                    </Tab>
-                    <Tab key="timeline" title="Timeline" href="/timeline">
-                        Timeline
-                    </Tab>
-                    <Tab key="config" title="Config" href="/config">
-                        Config
-                    </Tab>
-                </Tabs> */}
             </NavbarContent>
         </Navbar>
     );

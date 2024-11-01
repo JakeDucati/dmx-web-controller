@@ -36,7 +36,7 @@ export default function SideWindow() {
         >
             {/* Sidebar content */}
             <div
-                className={`bg-gray-800 h-full text-white flex flex-col ${width === 0 ? "hidden" : ""}`}
+                className={`bg-gray-800 h-full flex flex-col ${width === 0 ? "hidden" : ""}`}
                 style={{ width: width > 20 ? "100%" : "0" }}
             >
 
@@ -49,7 +49,7 @@ export default function SideWindow() {
                 </div>
 
                 {/* Scrollable list */}
-                <div className="flex-grow overflow-y-auto p-2">
+                <div className="flex-grow overflow-y-scroll p-2">
                     <ul className="space-y-1">
                         {Array.from({ length: 50 }, (_, i) => (
                             <Button

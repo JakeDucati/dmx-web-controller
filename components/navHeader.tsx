@@ -1,11 +1,9 @@
 'use client';
 
 import useSocket from "@/hooks/useSocket";
-import { Navbar, NavbarBrand, NavbarContent, NavbarItem, Link, Tabs, Tab, Card, CardBody } from "@nextui-org/react";
-import { usePathname } from "next/navigation";
+import { Navbar, NavbarBrand, NavbarContent, NavbarItem, Link } from "@nextui-org/react";
 
 export default function NavHeader() {
-    const pathname = usePathname();
     const socket = useSocket();
 
     return (

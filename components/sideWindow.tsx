@@ -8,7 +8,9 @@ import { useState } from "react";
 
 
 export default function SideWindow() {
-    const [width, setWidth] = useState(0); // Initial width
+    const [width, setWidth] = useState(0);
+    const [isExpanding, setIsExpanding] = useState(false);
+    const [activeTab, setActiveTab] = useState<"fixtures" | "addFixture" | "something">("fixtures");
 
     // Handles resizing the sidebar by dragging
     const handleMouseDown = (e: React.MouseEvent) => {
@@ -18,6 +20,7 @@ export default function SideWindow() {
         const handleMouseMove = (e: MouseEvent) => {
             const newWidth = width + (e.clientX - startX);
             setWidth(newWidth > 0 ? newWidth : 0); // Allow collapse to 0 width
+            setIsExpanding(false); // Disable transition during drag
         };
 
         const handleMouseUp = () => {
@@ -29,9 +32,21 @@ export default function SideWindow() {
         document.addEventListener("mouseup", handleMouseUp);
     };
 
+    // Expand sidebar if not expanded
+    const expandSidebar = () => {
+        if (width > 100) return; // Sidebar is already expanded, do nothing
+
+        setIsExpanding(true); // Enable transition
+        setWidth(500);
+
+        // Disable transition after expanding
+        setTimeout(() => setIsExpanding(false), 200);
+    };
+
     return (
         <div
-            className="fixed top-0 left-0 h-full flex items-center z-50"
+            onMouseDown={handleMouseDown}
+            className={`fixed top-0 left-0 h-full flex items-center z-50 ${isExpanding ? "transition-all" : ""}`}
             style={{ width: `${width}px` }}
         >
             {/* Sidebar content */}
@@ -39,7 +54,6 @@ export default function SideWindow() {
                 className={`bg-gray-800 h-full flex flex-col ${width === 0 ? "hidden" : ""}`}
                 style={{ width: width > 20 ? "100%" : "0" }}
             >
-
                 {/* Search Bar */}
                 <div className="p-2">
                     <Input
@@ -48,22 +62,36 @@ export default function SideWindow() {
                     />
                 </div>
 
-                {/* Scrollable list */}
+                {/* Scrollable Content Area */}
                 <div className="flex-grow overflow-y-scroll p-2">
-                    <ul className="space-y-1">
-                        {Array.from({ length: 50 }, (_, i) => (
-                            <Button
-                                key={i}
-                                className="p-2 w-full"
-                            >
-                                Fixture {i + 1}
-                            </Button>
-                        ))}
-                    </ul>
+                    {activeTab === "fixtures" && (
+                        <ul className="space-y-1">
+                            {Array.from({ length: 50 }, (_, i) => (
+                                <Button
+                                    key={i}
+                                    className="p-2 w-full"
+                                >
+                                    Fixture {i + 1}
+                                </Button>
+                            ))}
+                        </ul>
+                    )}
+                    {activeTab === "addFixture" && (
+                        <div>
+                            <h2 className="text-lg font-semibold text-white">Add Fixture</h2>
+                            {/* Add fixture form or content here */}
+                        </div>
+                    )}
+                    {activeTab === "something" && (
+                        <div>
+                            <h2 className="text-lg font-semibold text-white">Something Else</h2>
+                            {/* Add 'Something' content here */}
+                        </div>
+                    )}
                 </div>
             </div>
 
-            {/* Resize handle */}
+            {/* Resize handle with buttons */}
             <div
                 className="w-16 h-full cursor-ew-resize bg-slate-800 flex flex-col justify-between pt-4"
                 onMouseDown={handleMouseDown}
@@ -77,6 +105,10 @@ export default function SideWindow() {
                         <Button
                             className="rounded-full min-w-4 min-h-4 mb-2"
                             color="primary"
+                            onClick={() => {
+                                setActiveTab("addFixture");
+                                expandSidebar();
+                            }}
                         >+</Button>
                     </Tooltip>
 
@@ -88,6 +120,10 @@ export default function SideWindow() {
                         <Button
                             className="rounded-full min-w-4 min-h-4 mb-2"
                             color="primary"
+                            onClick={() => {
+                                setActiveTab("fixtures");
+                                expandSidebar();
+                            }}
                         >
                             <Image
                                 src={"/icons/bulb.svg"}
@@ -108,10 +144,14 @@ export default function SideWindow() {
                         <Button
                             className="rounded-full min-w-4 min-h-4 mb-2"
                             color="primary"
+                            onClick={() => {
+                                setActiveTab("something");
+                                expandSidebar();
+                            }}
                         >=</Button>
                     </Tooltip>
                 </div>
             </div>
         </div>
     );
-}
+};

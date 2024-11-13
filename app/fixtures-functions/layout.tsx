@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function FixturesFunctionsLayout() {
     return (
-        <div>
+        <div className="w-full fixed top-[64px] flex items-center justify-center gap-10">
             <Link href={"/fixtures-functions"}>
                 Regular View
             </Link>

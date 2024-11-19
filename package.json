@@ -32,6 +32,8 @@
 		"next-themes": "^0.2.1",
 		"rc-slider": "^11.1.7",
 		"react": "18.3.1",
+		"react-dnd": "^16.0.1",
+		"react-dnd-html5-backend": "^16.0.1",
 		"react-dom": "18.3.1",
 		"react-pro-sidebar": "^1.1.0",
 		"react-toastify": "^10.0.6",

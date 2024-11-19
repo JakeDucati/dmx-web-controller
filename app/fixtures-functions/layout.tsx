@@ -1,17 +1,29 @@
-import Link from "next/link";
+"use client";
+
+import { Link } from "@nextui-org/link";
+import { usePathname } from "next/navigation";
 
 export default function FixturesFunctionsLayout() {
+    const pathname = usePathname();
+
+    const tabs = [
+        { path: "/fixtures-functions", label: "Regular View" },
+        { path: "/fixtures-functions/dmx-view", label: "DMX View" },
+        { path: "/fixtures-functions/3d-view", label: "3D View" },
+    ];
+
     return (
         <div className="w-full fixed top-[64px] flex items-center justify-center gap-10">
-            <Link href={"/fixtures-functions"}>
-                Regular View
-            </Link>
-            <Link href={"/fixtures-functions/dmx-view"}>
-                DMX View
-            </Link>
-            <Link href={"/fixtures-functions/3d-view"}>
-                3D View
-            </Link>
+            {tabs.map((tab) => (
+                <Link
+                    color="foreground"
+                    key={tab.path}
+                    href={tab.path}
+                    className={`border-b-2 ${pathname === tab.path ? "border-white" : "border-transparent"}`}
+                >
+                    {tab.label}
+                </Link>
+            ))}
         </div>
     );
 }

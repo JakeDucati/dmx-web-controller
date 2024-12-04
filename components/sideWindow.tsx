@@ -2,16 +2,16 @@
 
 import { Button } from "@nextui-org/button";
 import { Input } from "@nextui-org/input";
-import { Tooltip } from "@nextui-org/react";
-import { Lightbulb, Menu, Plus } from "lucide-react";
-import Image from "next/image";
+import { Autocomplete, AutocompleteItem, Image, Tooltip } from "@nextui-org/react";
+import { Lightbulb, PackagePlus, Plus } from "lucide-react";
 import { useState } from "react";
 
 
 export default function SideWindow() {
     const [width, setWidth] = useState(0);
     const [isExpanding, setIsExpanding] = useState(false);
-    const [activeTab, setActiveTab] = useState<"fixtures" | "addFixture" | "something">("fixtures");
+    const [activeTab, setActiveTab] = useState<"fixtures" | "addFixture" | "createFixture">("fixtures");
+    const [channels, setChannels] = useState<string[]>([]);
 
     // Handles resizing the sidebar by dragging
     const handleMouseDown = (e: React.MouseEvent) => {
@@ -20,8 +20,8 @@ export default function SideWindow() {
 
         const handleMouseMove = (e: MouseEvent) => {
             const newWidth = width + (e.clientX - startX);
-            setWidth(newWidth > 0 ? newWidth : 0); // Allow collapse to 0 width
-            setIsExpanding(false); // Disable transition during drag
+            setWidth(newWidth > 0 ? newWidth : 0);
+            setIsExpanding(false);
         };
 
         const handleMouseUp = () => {
@@ -33,16 +33,28 @@ export default function SideWindow() {
         document.addEventListener("mouseup", handleMouseUp);
     };
 
-    // Expand sidebar if not expanded
-    const expandSidebar = () => {
-        if (width > 100) return; // Sidebar is already expanded, do nothing
-
-        setIsExpanding(true); // Enable transition
-        setWidth(500);
-
-        // Disable transition after expanding
-        setTimeout(() => setIsExpanding(false), 200);
+    // expand / retract sidebar
+    const toggleSidebar = () => {
+        if (width > 100) {
+            setIsExpanding(true);
+            setWidth(0);
+            setTimeout(() => setIsExpanding(false), 200);
+        } else {
+            setIsExpanding(true);
+            setWidth(500);
+            setTimeout(() => setIsExpanding(false), 200);
+        }
     };
+
+    const addChannel = () => {
+        const newChannelNumber = channels.length + 1;
+        setChannels([...channels, newChannelNumber.toString()]);
+    };
+    const removeChannel = (index: number) => {
+        setChannels(channels.filter((_, i) => i !== index));
+    };
+
+
 
     return (
         <div
@@ -50,9 +62,8 @@ export default function SideWindow() {
             className={`fixed top-0 left-0 h-full flex items-center z-50 ${isExpanding ? "transition-all" : ""}`}
             style={{ width: `${width}px` }}
         >
-            {/* Sidebar content */}
             <div
-                className={`bg-gray-800 h-full flex flex-col ${width === 0 ? "hidden" : ""}`}
+                className={`bg-zinc-900 h-full flex flex-col ${width === 0 ? "hidden" : ""}`}
                 style={{ width: width > 20 ? "100%" : "0" }}
             >
                 {/* Search Bar */}
@@ -63,7 +74,7 @@ export default function SideWindow() {
                     />
                 </div>
 
-                {/* Scrollable Content Area */}
+                {/* Content Area */}
                 <div className="flex-grow overflow-y-scroll p-2">
                     {activeTab === "fixtures" && (
                         <ul className="space-y-1">
@@ -80,13 +91,71 @@ export default function SideWindow() {
                     {activeTab === "addFixture" && (
                         <div>
                             <h2 className="text-lg font-semibold text-white">Add Fixture</h2>
-                            {/* Add fixture form or content here */}
+                            <div>
+
+                            </div>
                         </div>
                     )}
-                    {activeTab === "something" && (
+                    {activeTab === "createFixture" && (
                         <div>
-                            <h2 className="text-lg font-semibold text-white">Something Else</h2>
-                            {/* Add 'Something' content here */}
+                            <h2 className="text-lg font-semibold text-white">Create Fixture</h2>
+                            <div className="flex flex-col gap-2 mt-4">
+                                <h3>Info</h3>
+                                <Input
+                                    label="Brand"
+                                    type="text"
+                                />
+                                <Input
+                                    label="Name"
+                                    type="text"
+                                />
+                                <div className="flex gap-2">
+                                    <Autocomplete
+                                        label="Type"
+                                    >
+                                        <AutocompleteItem key="stationary">
+                                            Stationary
+                                        </AutocompleteItem>
+                                        <AutocompleteItem key="moving">
+                                            Moving Head
+                                        </AutocompleteItem>
+                                        <AutocompleteItem key="Laser">
+                                            Laser
+                                        </AutocompleteItem>
+                                    </Autocomplete>
+                                    <Image
+                                        src="/fixtures/stationary.png"
+                                        width={80}
+                                        height={80}
+                                    />
+                                </div>
+                            </div>
+                            <div className="flex flex-col gap-2 mt-4">
+                                <h3>Channels</h3>
+                                <div className="flex flex-col gap-2">
+                                    {channels.map((channel, index) => (
+                                        <>
+                                            <Input
+                                                type="text"
+                                                startContent={channel}
+                                            />
+                                            <Button
+                                                isIconOnly
+                                                color="danger"
+                                                onClick={() => removeChannel(index)}
+                                            >
+                                                <Plus />
+                                            </Button>
+                                        </>
+                                    ))}
+                                </div>
+                                <Button
+                                    className="rounded-full"
+                                    onPress={addChannel}
+                                >
+                                    <Plus />
+                                </Button>
+                            </div>
                         </div>
                     )}
                 </div>
@@ -94,7 +163,7 @@ export default function SideWindow() {
 
             {/* Resize handle with buttons */}
             <div
-                className="w-16 h-full cursor-ew-resize bg-slate-800 flex flex-col justify-between pt-4"
+                className="w-16 h-full cursor-ew-resize bg-zinc-800 flex flex-col justify-between pt-4"
                 onMouseDown={handleMouseDown}
             >
                 <div className="flex flex-col items-center">
@@ -106,9 +175,11 @@ export default function SideWindow() {
                         <Button
                             className="rounded-full min-w-4 min-h-4 mb-2"
                             color="primary"
-                            onClick={() => {
+                            onPress={() => {
                                 setActiveTab("addFixture");
-                                expandSidebar();
+                                if (activeTab === "addFixture") {
+                                    toggleSidebar();
+                                }
                             }}
                         >
                             <Plus />
@@ -123,9 +194,11 @@ export default function SideWindow() {
                         <Button
                             className="rounded-full min-w-4 min-h-4 mb-2"
                             color="primary"
-                            onClick={() => {
+                            onPress={() => {
                                 setActiveTab("fixtures");
-                                expandSidebar();
+                                if (activeTab === "fixtures") {
+                                    toggleSidebar();
+                                }
                             }}
                         >
                             <Lightbulb />
@@ -135,18 +208,20 @@ export default function SideWindow() {
                 <div className="flex flex-col items-center">
                     <Tooltip
                         placement="right"
-                        content="Something"
+                        content="Create Fixture"
                         color="primary"
                     >
                         <Button
                             className="rounded-full min-w-4 min-h-4 mb-2"
                             color="primary"
-                            onClick={() => {
-                                setActiveTab("something");
-                                expandSidebar();
+                            onPress={() => {
+                                setActiveTab("createFixture");
+                                if (activeTab === "createFixture") {
+                                    toggleSidebar();
+                                }
                             }}
                         >
-                            <Menu />
+                            <PackagePlus />
                         </Button>
                     </Tooltip>
                 </div>

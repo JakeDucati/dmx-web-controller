@@ -110,7 +110,7 @@ function Track({ trackIndex, blocks, moveBlock, isGridVisible }: TrackProps) {
 
     return (
         <div
-            className="track border-b border-gray-700 relative h-16"
+            className="border-b border-gray-700 relative h-16"
             onDrop={handleDrop}
             onDragOver={(e) => e.preventDefault()}
         >

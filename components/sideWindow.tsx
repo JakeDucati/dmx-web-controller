@@ -3,6 +3,7 @@
 import { Button } from "@nextui-org/button";
 import { Input } from "@nextui-org/input";
 import { Tooltip } from "@nextui-org/react";
+import { Lightbulb, Menu, Plus } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 
@@ -109,7 +110,9 @@ export default function SideWindow() {
                                 setActiveTab("addFixture");
                                 expandSidebar();
                             }}
-                        >+</Button>
+                        >
+                            <Plus />
+                        </Button>
                     </Tooltip>
 
                     <Tooltip
@@ -125,13 +128,7 @@ export default function SideWindow() {
                                 expandSidebar();
                             }}
                         >
-                            <Image
-                                src={"/icons/bulb.svg"}
-                                width={20}
-                                height={20}
-                                alt="Fixtures"
-                                className="min-w-[20px] min-h-[20px]"
-                            />
+                            <Lightbulb />
                         </Button>
                     </Tooltip>
                 </div>
@@ -148,7 +145,9 @@ export default function SideWindow() {
                                 setActiveTab("something");
                                 expandSidebar();
                             }}
-                        >=</Button>
+                        >
+                            <Menu />
+                        </Button>
                     </Tooltip>
                 </div>
             </div>

@@ -1,0 +1,18 @@
+{
+    "projectName": "test",
+    "creationDate": "2024-12-04T12:00:00Z",
+    "lastModified": "2024-12-04T15:00:00Z",
+    "version": "1.0.0",
+    "fixtures": [
+        {
+            "reference": "global fixture",
+            "name": "project specific name",
+            "address": 1
+        },
+        {
+            "reference": "global fixture",
+            "name": "project specific name",
+            "address": 4
+        }
+    ]
+}

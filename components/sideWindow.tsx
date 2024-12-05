@@ -3,7 +3,7 @@
 import { Button } from "@nextui-org/button";
 import { Input } from "@nextui-org/input";
 import { Autocomplete, AutocompleteItem, Image, Tooltip } from "@nextui-org/react";
-import { Lightbulb, PackagePlus, Plus } from "lucide-react";
+import { Lightbulb, PackagePlus, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 
 
@@ -58,7 +58,6 @@ export default function SideWindow() {
 
     return (
         <div
-            onMouseDown={handleMouseDown}
             className={`fixed top-0 left-0 h-full flex items-center z-50 ${isExpanding ? "transition-all" : ""}`}
             style={{ width: `${width}px` }}
         >
@@ -134,19 +133,18 @@ export default function SideWindow() {
                                 <h3>Channels</h3>
                                 <div className="flex flex-col gap-2">
                                     {channels.map((channel, index) => (
-                                        <>
+                                        <div className="flex gap-1">
                                             <Input
                                                 type="text"
                                                 startContent={channel}
                                             />
                                             <Button
                                                 isIconOnly
-                                                color="danger"
-                                                onClick={() => removeChannel(index)}
+                                                onPress={() => removeChannel(index)}
                                             >
-                                                <Plus />
+                                                <Trash2 />
                                             </Button>
-                                        </>
+                                        </div>
                                     ))}
                                 </div>
                                 <Button
@@ -161,19 +159,20 @@ export default function SideWindow() {
                 </div>
             </div>
 
-            {/* Resize handle with buttons */}
+            {/* Resize handle */}
             <div
-                className="w-16 h-full cursor-ew-resize bg-zinc-800 flex flex-col justify-between pt-4"
+                className="min-w-16 h-full cursor-ew-resize bg-zinc-800 flex flex-col justify-between pt-4"
                 onMouseDown={handleMouseDown}
             >
-                <div className="flex flex-col items-center">
+                <div className="flex flex-col items-center gap-2">
                     <Tooltip
                         placement="right"
                         content="Add Fixture"
                         color="primary"
                     >
                         <Button
-                            className="rounded-full min-w-4 min-h-4 mb-2"
+                            className="rounded-full"
+                            isIconOnly
                             color="primary"
                             onPress={() => {
                                 setActiveTab("addFixture");
@@ -192,7 +191,8 @@ export default function SideWindow() {
                         color="primary"
                     >
                         <Button
-                            className="rounded-full min-w-4 min-h-4 mb-2"
+                            className="rounded-full"
+                            isIconOnly
                             color="primary"
                             onPress={() => {
                                 setActiveTab("fixtures");
@@ -212,7 +212,8 @@ export default function SideWindow() {
                         color="primary"
                     >
                         <Button
-                            className="rounded-full min-w-4 min-h-4 mb-2"
+                            className="rounded-full mb-2"
+                            isIconOnly
                             color="primary"
                             onPress={() => {
                                 setActiveTab("createFixture");

@@ -1,8 +1,10 @@
 "use client";
 
 import useSocket from "@/hooks/useSocket";
-import { Navbar, NavbarBrand, NavbarContent, NavbarItem, Link } from "@nextui-org/react";
+import { Navbar, NavbarBrand, NavbarContent, NavbarItem, Link, ButtonGroup, Button, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from "@nextui-org/react";
+import { ChevronDown } from "lucide-react";
 import { usePathname } from "next/navigation";
+import React from "react";
 
 export default function NavHeader() {
     const socket = useSocket();
@@ -15,11 +17,44 @@ export default function NavHeader() {
         { path: "/config", label: "Config" },
     ];
 
+    const [selectedOption, setSelectedOption] = React.useState(new Set(["Save"]));
+    const selectedOptionValue = Array.from(selectedOption)[0];
+
     return (
         <Navbar>
             <NavbarBrand>
                 <p className="font-bold text-inherit">DMX Web Controller</p>
             </NavbarBrand>
+            <NavbarItem>
+                <ButtonGroup variant="flat">
+                    <Button>{selectedOptionValue}</Button>
+                    <Dropdown placement="bottom-end">
+                        <DropdownTrigger>
+                            <Button isIconOnly>
+                                <ChevronDown />
+                            </Button>
+                        </DropdownTrigger>
+                        <DropdownMenu
+                            disallowEmptySelection
+                            aria-label="Merge options"
+                            selectedKeys={selectedOption}
+                            selectionMode="single"
+                            onSelectionChange={() => {setSelectedOption}}
+                            className="max-w-[300px]"
+                        >
+                            <DropdownItem key="save" description="Does something">
+                                Save
+                            </DropdownItem>
+                            <DropdownItem key="open" description="does something">
+                                Open
+                            </DropdownItem>
+                            <DropdownItem key="orher" description="this">
+                                Other
+                            </DropdownItem>
+                        </DropdownMenu>
+                    </Dropdown>
+                </ButtonGroup>
+            </NavbarItem>
             <NavbarContent className="hidden sm:flex gap-4" justify="center">
                 <NavbarItem>
                     {socket ? (

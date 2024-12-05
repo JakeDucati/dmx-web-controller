@@ -2,7 +2,7 @@
 
 import { Button } from "@nextui-org/button";
 import { Input } from "@nextui-org/input";
-import { Autocomplete, AutocompleteItem, Image, Tooltip } from "@nextui-org/react";
+import { Autocomplete, AutocompleteItem, Code, Image, Tooltip } from "@nextui-org/react";
 import { Lightbulb, PackagePlus, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 
@@ -103,56 +103,47 @@ export default function SideWindow() {
                                 <Input
                                     label="Brand"
                                     type="text"
+                                    onChange={}
                                 />
                                 <Input
                                     label="Name"
                                     type="text"
                                 />
                                 <div className="flex gap-2">
-                                    <Autocomplete
-                                        label="Type"
-                                    >
-                                        <AutocompleteItem key="stationary">
-                                            Stationary
-                                        </AutocompleteItem>
-                                        <AutocompleteItem key="moving">
-                                            Moving Head
-                                        </AutocompleteItem>
-                                        <AutocompleteItem key="Laser">
-                                            Laser
-                                        </AutocompleteItem>
+                                    <Autocomplete label="Type">
+                                        <AutocompleteItem key="stationary">Stationary</AutocompleteItem>
+                                        <AutocompleteItem key="moving">Moving Head</AutocompleteItem>
+                                        <AutocompleteItem key="Laser">Laser</AutocompleteItem>
                                     </Autocomplete>
-                                    <Image
-                                        src="/fixtures/stationary.png"
-                                        width={80}
-                                        height={80}
-                                    />
+                                    <Image src="/fixtures/stationary.png" width={80} height={80} />
                                 </div>
                             </div>
+
                             <div className="flex flex-col gap-2 mt-4">
                                 <h3>Channels</h3>
                                 <div className="flex flex-col gap-2">
                                     {channels.map((channel, index) => (
-                                        <div className="flex gap-1">
+                                        <div className="flex gap-1" key={index}>
                                             <Input
                                                 type="text"
-                                                startContent={channel}
+                                                startContent={index + 1}
                                             />
-                                            <Button
-                                                isIconOnly
-                                                onPress={() => removeChannel(index)}
-                                            >
+                                            <Button isIconOnly onPress={() => removeChannel(index)}>
                                                 <Trash2 />
                                             </Button>
                                         </div>
                                     ))}
                                 </div>
-                                <Button
-                                    className="rounded-full"
-                                    onPress={addChannel}
-                                >
+                                <Button className="rounded-full" onPress={addChannel}>
                                     <Plus />
                                 </Button>
+                            </div>
+
+                            <div className="mt-4">
+                                <div>
+                                    Fixture will be saved as
+                                    <Code></Code>
+                                </div>
                             </div>
                         </div>
                     )}
@@ -176,6 +167,9 @@ export default function SideWindow() {
                             color="primary"
                             onPress={() => {
                                 setActiveTab("addFixture");
+                                if (width < 20) {
+                                    toggleSidebar();
+                                }
                                 if (activeTab === "addFixture") {
                                     toggleSidebar();
                                 }
@@ -196,6 +190,9 @@ export default function SideWindow() {
                             color="primary"
                             onPress={() => {
                                 setActiveTab("fixtures");
+                                if (width < 20) {
+                                    toggleSidebar();
+                                }
                                 if (activeTab === "fixtures") {
                                     toggleSidebar();
                                 }
@@ -217,6 +214,9 @@ export default function SideWindow() {
                             color="primary"
                             onPress={() => {
                                 setActiveTab("createFixture");
+                                if (width < 20) {
+                                    toggleSidebar();
+                                }
                                 if (activeTab === "createFixture") {
                                     toggleSidebar();
                                 }

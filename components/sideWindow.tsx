@@ -125,7 +125,7 @@ export default function SideWindow() {
         fetchFixtures();
     }, []);
 
-    const Folder = ({ name, contents }: {name: string, contents: any}) => {
+    const Folder = ({ name, contents }: { name: string, contents: any }) => {
         const [isOpen, setIsOpen] = useState(false);
 
         const toggleOpen = () => setIsOpen(!isOpen);
@@ -149,7 +149,15 @@ export default function SideWindow() {
                                 value ? (
                                     <Folder key={key} name={key} contents={value} />
                                 ) : (
-                                    <div key={key}>{key}</div>
+                                    <div
+                                        className="flex justify-between items-center"
+                                        key={key}
+                                    >
+                                        <div>{key}</div>
+                                        <Button isIconOnly>
+                                            <Plus />
+                                        </Button>
+                                    </div>
                                 )
                             )}
                     </div>
@@ -178,15 +186,22 @@ export default function SideWindow() {
                 {/* Content Area */}
                 <div className="flex-grow overflow-y-scroll p-2">
                     {activeTab === "fixtures" && (
-                        <ul className="space-y-1">
-                            {Object.entries(fixtures).map(([key, value]) => (
-                                <Folder key={key} name={key} contents={value} />
-                            ))}
-                        </ul>
+                        <div>
+                            <h2 className="text-lg font-semibold text-white">Fixtures</h2>
+                            <div>
+                            </div>
+                        </div>
                     )}
                     {activeTab === "addFixture" && (
                         <div>
                             <h2 className="text-lg font-semibold text-white">Add Fixture</h2>
+                            <div>
+                                <ul className="space-y-1">
+                                    {Object.entries(fixtures).map(([key, value]) => (
+                                        <Folder key={key} name={key} contents={value} />
+                                    ))}
+                                </ul>
+                            </div>
                         </div>
                     )}
                     {activeTab === "createFixture" && (

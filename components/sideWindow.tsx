@@ -3,6 +3,7 @@
 import { Button } from "@nextui-org/button";
 import { Input } from "@nextui-org/input";
 import { Autocomplete, AutocompleteItem, Code, Image, Tooltip } from "@nextui-org/react";
+import { Key } from "@react-types/shared";
 import { Lightbulb, PackagePlus, Plus, Trash2 } from "lucide-react";
 import { SetStateAction, SyntheticEvent, useState } from "react";
 import { toast } from "react-toastify";
@@ -21,8 +22,8 @@ export default function SideWindow() {
     const name = nameInput.trim();
     const path = `global/fixtures/${sanitize(brand)}/${sanitize(name)}.json`;
 
-    const handleAutocompleteChange = (selectedValue: SetStateAction<string> | SyntheticEvent<HTMLInputElement, Event>) => {
-        setType(String(selectedValue)); // Directly use the selectedValue string
+    const handleAutocompleteChange = (selectedValue: Key | null) => {
+        setType(String(selectedValue));
     };
 
     // save fixture
@@ -48,7 +49,7 @@ export default function SideWindow() {
             const response = await fetch("/api/createFixture", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(fixtureData), // No circular structures
+                body: JSON.stringify(fixtureData),
             });
 
             if (!response.ok) {
@@ -64,7 +65,7 @@ export default function SideWindow() {
         }
     };
 
-    // Handles resizing the sidebar by dragging
+    // sidebar resize
     const handleMouseDown = (e: React.MouseEvent) => {
         e.preventDefault();
         const startX = e.clientX;
@@ -84,7 +85,7 @@ export default function SideWindow() {
         document.addEventListener("mouseup", handleMouseUp);
     };
 
-    // Expand / retract sidebar
+    // expand / retract sidebar
     const toggleSidebar = () => {
         if (width > 100) {
             setIsExpanding(true);
@@ -97,12 +98,11 @@ export default function SideWindow() {
         }
     };
 
-    // Add and remove channel logic
+    // add/remove channel
     const addChannel = () => {
         const channelNumber = (channels.length + 1).toString();
         setChannels([...channels, { number: channelNumber, label: "" }]);
     };
-
     const removeChannel = (index: number) => {
         setChannels(channels.filter((_, i) => i !== index));
     };
@@ -163,11 +163,11 @@ export default function SideWindow() {
                                 <div className="flex gap-2">
                                     <Autocomplete
                                         label="Type"
-                                        onSelect={(selectedValue) => handleAutocompleteChange(selectedValue)} // Should update `type`
+                                        onSelectionChange={(selectedValue) => handleAutocompleteChange(selectedValue)}
                                     >
-                                        <AutocompleteItem key="stationary" value="Stationary">Stationary</AutocompleteItem>
-                                        <AutocompleteItem key="moving" value="Moving Head">Moving Head</AutocompleteItem>
-                                        <AutocompleteItem key="laser" value="Laser">Laser</AutocompleteItem>
+                                        <AutocompleteItem key="stationary">Stationary</AutocompleteItem>
+                                        <AutocompleteItem key="moving">Moving Head</AutocompleteItem>
+                                        <AutocompleteItem key="laser">Laser</AutocompleteItem>
                                     </Autocomplete>
                                     <Image
                                         src="/fixtures/stationary.png"

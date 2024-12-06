@@ -1,0 +1,11 @@
+{
+  "brand": "Generic",
+  "name": "PAR",
+  "type": "stationary",
+  "channels": [
+    {
+      "number": "1",
+      "label": "Intensity"
+    }
+  ]
+}

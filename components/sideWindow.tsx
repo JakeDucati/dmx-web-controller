@@ -5,6 +5,7 @@ import { Input } from "@nextui-org/input";
 import { Autocomplete, AutocompleteItem, Code, Image, Tooltip } from "@nextui-org/react";
 import { Lightbulb, PackagePlus, Plus, Trash2 } from "lucide-react";
 import { SetStateAction, SyntheticEvent, useState } from "react";
+import { toast } from "react-toastify";
 
 export default function SideWindow() {
     const [width, setWidth] = useState(0);
@@ -21,39 +22,45 @@ export default function SideWindow() {
     const path = `global/fixtures/${sanitize(brand)}/${sanitize(name)}.json`;
 
     const handleAutocompleteChange = (selectedValue: SetStateAction<string> | SyntheticEvent<HTMLInputElement, Event>) => {
-        setType(String(selectedValue));
+        setType(String(selectedValue)); // Directly use the selectedValue string
     };
 
     // save fixture
     const handleSave = async () => {
         if (!brand || !name || !type || channels.length === 0) return;
 
-        // Prepare the fixture data with channel numbers and labels
+        // Sanitize channels array
+        const sanitizedChannels = channels.map(({ number, label }) => ({
+            number: number.trim(),
+            label: label.trim(),
+        }));
+
         const fixtureData = {
-            brand: brand.trim(),
-            name: name.trim(),
-            type: type, // Ensure it's a string, not an event
-            channels: channels.reduce((acc, { number, label }) => {
-                acc[number] = label; // Save the channel number as key and label as value
-                return acc;
-            }, {}),
+            brand: brand,
+            name: name,
+            type: type,
+            channels: sanitizedChannels,
         };
+
+        console.log("Sending sanitized fixtureData:", fixtureData);
 
         try {
             const response = await fetch("/api/createFixture", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(fixtureData), // Serialize only plain data
+                body: JSON.stringify(fixtureData), // No circular structures
             });
 
-            if (response.ok) {
-                alert("Fixture saved successfully!");
+            if (!response.ok) {
+                const errorDetails = await response.json();
+                console.error("Error response:", errorDetails);
+                toast(`Failed to save fixture: ${errorDetails.error}`);
             } else {
-                alert("Failed to save fixture. Please try again.");
+                toast("Fixture saved successfully!");
             }
         } catch (error) {
             console.error("Error saving fixture:", error);
-            alert("An error occurred. Please try again.");
+            toast("An error occurred. Please try again.");
         }
     };
 
@@ -156,11 +163,11 @@ export default function SideWindow() {
                                 <div className="flex gap-2">
                                     <Autocomplete
                                         label="Type"
-                                        onSelect={(selectedValue) => handleAutocompleteChange(selectedValue)}
+                                        onSelect={(selectedValue) => handleAutocompleteChange(selectedValue)} // Should update `type`
                                     >
-                                        <AutocompleteItem key="stationary">Stationary</AutocompleteItem>
-                                        <AutocompleteItem key="moving">Moving Head</AutocompleteItem>
-                                        <AutocompleteItem key="laser">Laser</AutocompleteItem>
+                                        <AutocompleteItem key="stationary" value="Stationary">Stationary</AutocompleteItem>
+                                        <AutocompleteItem key="moving" value="Moving Head">Moving Head</AutocompleteItem>
+                                        <AutocompleteItem key="laser" value="Laser">Laser</AutocompleteItem>
                                     </Autocomplete>
                                     <Image
                                         src="/fixtures/stationary.png"
@@ -181,7 +188,7 @@ export default function SideWindow() {
                                                 startContent={channel.number} // Display the channel number
                                                 onChange={(e) => {
                                                     const newChannels = [...channels];
-                                                    newChannels[index].label = e.target.value; // Update the label for this channel
+                                                    newChannels[index].label = e.target.value; // Only store the trimmed string
                                                     setChannels(newChannels);
                                                 }}
                                             />
@@ -279,7 +286,7 @@ export default function SideWindow() {
                         color="primary"
                     >
                         <Button
-                            className="rounded-full mb-2"
+                            className="rounded-full mb-3"
                             isIconOnly
                             color="primary"
                             onPress={() => {

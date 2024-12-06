@@ -4,14 +4,58 @@ import { Button } from "@nextui-org/button";
 import { Input } from "@nextui-org/input";
 import { Autocomplete, AutocompleteItem, Code, Image, Tooltip } from "@nextui-org/react";
 import { Lightbulb, PackagePlus, Plus, Trash2 } from "lucide-react";
-import { useState } from "react";
-
+import { SetStateAction, SyntheticEvent, useState } from "react";
 
 export default function SideWindow() {
     const [width, setWidth] = useState(0);
     const [isExpanding, setIsExpanding] = useState(false);
     const [activeTab, setActiveTab] = useState<"fixtures" | "addFixture" | "createFixture">("fixtures");
-    const [channels, setChannels] = useState<string[]>([]);
+    const [channels, setChannels] = useState<{ number: string; label: string }[]>([]);
+    const [brandInput, setBrandInput] = useState("");
+    const [nameInput, setNameInput] = useState("");
+    const [type, setType] = useState("");
+
+    const sanitize = (value: string) => value.trim().replace(/[^a-zA-Z0-9-_]/g, '-');
+    const brand = brandInput.trim();
+    const name = nameInput.trim();
+    const path = `global/fixtures/${sanitize(brand)}/${sanitize(name)}.json`;
+
+    const handleAutocompleteChange = (selectedValue: SetStateAction<string> | SyntheticEvent<HTMLInputElement, Event>) => {
+        setType(String(selectedValue));
+    };
+
+    // save fixture
+    const handleSave = async () => {
+        if (!brand || !name || !type || channels.length === 0) return;
+
+        // Prepare the fixture data with channel numbers and labels
+        const fixtureData = {
+            brand: brand.trim(),
+            name: name.trim(),
+            type: type, // Ensure it's a string, not an event
+            channels: channels.reduce((acc, { number, label }) => {
+                acc[number] = label; // Save the channel number as key and label as value
+                return acc;
+            }, {}),
+        };
+
+        try {
+            const response = await fetch("/api/createFixture", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(fixtureData), // Serialize only plain data
+            });
+
+            if (response.ok) {
+                alert("Fixture saved successfully!");
+            } else {
+                alert("Failed to save fixture. Please try again.");
+            }
+        } catch (error) {
+            console.error("Error saving fixture:", error);
+            alert("An error occurred. Please try again.");
+        }
+    };
 
     // Handles resizing the sidebar by dragging
     const handleMouseDown = (e: React.MouseEvent) => {
@@ -33,7 +77,7 @@ export default function SideWindow() {
         document.addEventListener("mouseup", handleMouseUp);
     };
 
-    // expand / retract sidebar
+    // Expand / retract sidebar
     const toggleSidebar = () => {
         if (width > 100) {
             setIsExpanding(true);
@@ -46,15 +90,15 @@ export default function SideWindow() {
         }
     };
 
+    // Add and remove channel logic
     const addChannel = () => {
-        const newChannelNumber = channels.length + 1;
-        setChannels([...channels, newChannelNumber.toString()]);
+        const channelNumber = (channels.length + 1).toString();
+        setChannels([...channels, { number: channelNumber, label: "" }]);
     };
+
     const removeChannel = (index: number) => {
         setChannels(channels.filter((_, i) => i !== index));
     };
-
-
 
     return (
         <div
@@ -90,9 +134,6 @@ export default function SideWindow() {
                     {activeTab === "addFixture" && (
                         <div>
                             <h2 className="text-lg font-semibold text-white">Add Fixture</h2>
-                            <div>
-
-                            </div>
                         </div>
                     )}
                     {activeTab === "createFixture" && (
@@ -103,19 +144,29 @@ export default function SideWindow() {
                                 <Input
                                     label="Brand"
                                     type="text"
-                                    onChange={}
+                                    value={brandInput}
+                                    onChange={(e) => setBrandInput(e.target.value)}
                                 />
                                 <Input
                                     label="Name"
                                     type="text"
+                                    value={nameInput}
+                                    onChange={(e) => setNameInput(e.target.value)}
                                 />
                                 <div className="flex gap-2">
-                                    <Autocomplete label="Type">
+                                    <Autocomplete
+                                        label="Type"
+                                        onSelect={(selectedValue) => handleAutocompleteChange(selectedValue)}
+                                    >
                                         <AutocompleteItem key="stationary">Stationary</AutocompleteItem>
                                         <AutocompleteItem key="moving">Moving Head</AutocompleteItem>
-                                        <AutocompleteItem key="Laser">Laser</AutocompleteItem>
+                                        <AutocompleteItem key="laser">Laser</AutocompleteItem>
                                     </Autocomplete>
-                                    <Image src="/fixtures/stationary.png" width={80} height={80} />
+                                    <Image
+                                        src="/fixtures/stationary.png"
+                                        width={80}
+                                        height={80}
+                                    />
                                 </div>
                             </div>
 
@@ -126,24 +177,43 @@ export default function SideWindow() {
                                         <div className="flex gap-1" key={index}>
                                             <Input
                                                 type="text"
-                                                startContent={index + 1}
+                                                value={channel.label} // Bind to the channel's label
+                                                startContent={channel.number} // Display the channel number
+                                                onChange={(e) => {
+                                                    const newChannels = [...channels];
+                                                    newChannels[index].label = e.target.value; // Update the label for this channel
+                                                    setChannels(newChannels);
+                                                }}
                                             />
-                                            <Button isIconOnly onPress={() => removeChannel(index)}>
+                                            <Button
+                                                isIconOnly
+                                                onPress={() => removeChannel(index)}
+                                            >
                                                 <Trash2 />
                                             </Button>
                                         </div>
                                     ))}
                                 </div>
-                                <Button className="rounded-full" onPress={addChannel}>
+                                <Button
+                                    className="rounded-full"
+                                    onPress={addChannel}
+                                >
                                     <Plus />
                                 </Button>
                             </div>
 
                             <div className="mt-4">
                                 <div>
-                                    Fixture will be saved as
-                                    <Code></Code>
+                                    Fixture will be saved as <Code>{path}</Code>
                                 </div>
+                                <Button
+                                    className="w-full rounded-full mt-4"
+                                    color="primary"
+                                    onPress={handleSave}
+                                    isDisabled={!brand || !name || !type || channels.length === 0}
+                                >
+                                    Save
+                                </Button>
                             </div>
                         </div>
                     )}
@@ -229,4 +299,4 @@ export default function SideWindow() {
             </div>
         </div>
     );
-};
+}

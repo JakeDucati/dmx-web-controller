@@ -5,7 +5,7 @@ import { Input } from "@nextui-org/input";
 import { Autocomplete, AutocompleteItem, Code, Image, Tooltip } from "@nextui-org/react";
 import { Key } from "@react-types/shared";
 import { Lightbulb, PackagePlus, Plus, Trash2 } from "lucide-react";
-import { SetStateAction, SyntheticEvent, useState } from "react";
+import { SetStateAction, SyntheticEvent, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 export default function SideWindow() {
@@ -16,6 +16,8 @@ export default function SideWindow() {
     const [brandInput, setBrandInput] = useState("");
     const [nameInput, setNameInput] = useState("");
     const [type, setType] = useState("");
+    const [files, setFiles] = useState([]);
+    const [fixtures, setFixtures] = useState({});
 
     const sanitize = (value: string) => value.trim().replace(/[^a-zA-Z0-9-_]/g, '-');
     const brand = brandInput.trim();
@@ -107,6 +109,55 @@ export default function SideWindow() {
         setChannels(channels.filter((_, i) => i !== index));
     };
 
+    // get fixtures
+    useEffect(() => {
+        const fetchFixtures = async () => {
+            try {
+                const response = await fetch('/api/getFixtures');
+                const data = await response.json();
+                console.log('Fetched Fixtures:', data); // Debugging line
+                setFixtures(data); // Set fixtures state here
+            } catch (error) {
+                console.error('Error fetching fixtures:', error);
+            }
+        };
+
+        fetchFixtures();
+    }, []);
+
+    const Folder = ({ name, contents }: {name: string, contents: any}) => {
+        const [isOpen, setIsOpen] = useState(false);
+
+        const toggleOpen = () => setIsOpen(!isOpen);
+
+        return (
+            <div>
+                <div
+                    style={{
+                        cursor: 'pointer',
+                        fontWeight: isOpen ? 'bold' : 'normal',
+                        marginBottom: '5px',
+                    }}
+                    onClick={toggleOpen}
+                >
+                    {name}
+                </div>
+                {isOpen && (
+                    <div style={{ marginLeft: '20px' }}>
+                        {contents &&
+                            Object.entries(contents).map(([key, value]) =>
+                                value ? (
+                                    <Folder key={key} name={key} contents={value} />
+                                ) : (
+                                    <div key={key}>{key}</div>
+                                )
+                            )}
+                    </div>
+                )}
+            </div>
+        );
+    };
+
     return (
         <div
             className={`fixed top-0 left-0 h-full flex items-center z-50 ${isExpanding ? "transition-all" : ""}`}
@@ -128,13 +179,8 @@ export default function SideWindow() {
                 <div className="flex-grow overflow-y-scroll p-2">
                     {activeTab === "fixtures" && (
                         <ul className="space-y-1">
-                            {Array.from({ length: 50 }, (_, i) => (
-                                <Button
-                                    key={i}
-                                    className="p-2 w-full"
-                                >
-                                    Fixture {i + 1}
-                                </Button>
+                            {Object.entries(fixtures).map(([key, value]) => (
+                                <Folder key={key} name={key} contents={value} />
                             ))}
                         </ul>
                     )}

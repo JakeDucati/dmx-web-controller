@@ -1,4 +1,4 @@
-# DMX Web Controller
+# Prism Light Controller
 This provides control of DMX fixtures from a web browser on any device. The server must be ran on the device cocnnected to the fixtures. This control software is built with Next.js and NextUI.
 
 ## Supported Adapters

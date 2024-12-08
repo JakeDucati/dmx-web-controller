@@ -1,0 +1,11 @@
+{
+  "brand": "Generic",
+  "name": "Moving Head",
+  "type": "moving",
+  "channels": [
+    {
+      "number": "1",
+      "label": "Example"
+    }
+  ]
+}

@@ -23,7 +23,7 @@ export default function NavHeader() {
     return (
         <Navbar>
             <NavbarBrand>
-                <p className="font-bold text-inherit">DMX Web Controller</p>
+                <p className="font-bold text-inherit">Prism Light Controller</p>
             </NavbarBrand>
             <NavbarItem>
                 <ButtonGroup variant="flat">

@@ -1,16 +1,18 @@
-import { NextApiRequest, NextApiResponse } from 'next';
-import { Server as HttpServer } from 'http';
-import { Server as SocketIOServer } from '@/node_modules/socket.io';
-import { SerialPort } from 'serialport';
+import { Server as HttpServer } from "http";
+
+import { NextApiRequest, NextApiResponse } from "next";
+import { SerialPort } from "serialport";
+
+import { Server as SocketIOServer } from "@/node_modules/socket.io";
 
 // Extend the `http.Server` interface to include the `io` property
-declare module 'http' {
-    interface Server {
-        io?: SocketIOServer;
-    }
+declare module "http" {
+  interface Server {
+    io?: SocketIOServer;
+  }
 }
 
-const PORT_NAME = 'COM3'; // DMX adapter location
+const PORT_NAME = "COM3"; // DMX adapter location
 const BAUD_RATE = 250000; // DMX512 baud rate (250 kbps)
 const DMX_CHANNELS = 512;
 const UPDATE_RATE_HZ = 30; // 30Hz default
@@ -24,116 +26,130 @@ let port: SerialPort | null = null;
 
 // Initialize the serial port
 async function initializePort() {
-    if (port) return; // Already initialized
-    port = new SerialPort({
-        path: PORT_NAME,
-        baudRate: BAUD_RATE,
-        dataBits: 8,
-        stopBits: 2,
-        parity: 'none',
-        autoOpen: false,
-    });
+  if (port) return; // Already initialized
+  port = new SerialPort({
+    path: PORT_NAME,
+    baudRate: BAUD_RATE,
+    dataBits: 8,
+    stopBits: 2,
+    parity: "none",
+    autoOpen: false,
+  });
 
-    return new Promise((resolve, reject) => {
-        port!.open((err) => {
-            if (err) {
-                console.error('Error opening serial port:', err.message);
-                return reject(err);
-            }
-            console.log('Serial port opened.');
-            resolve(true);
-        });
+  return new Promise((resolve, reject) => {
+    port!.open((err) => {
+      if (err) {
+        console.error("Error opening serial port:", err.message);
+
+        return reject(err);
+      }
+      console.log("Serial port opened.");
+      resolve(true);
     });
+  });
 }
 
 // Send DMX data in a loop
 async function sendDMX() {
-    if (!port) await initializePort(); // Ensure port is initialized
+  if (!port) await initializePort(); // Ensure port is initialized
 
-    const sendFrame = () => {
-        if (!port || !port.isOpen) return; // Exit if the port is not open
+  const sendFrame = () => {
+    if (!port || !port.isOpen) return; // Exit if the port is not open
 
-        sendBreak(() => {
-            sendMarkAfterBreak(() => {
-                port!.write(dmxData, (err) => {
-                    if (err) {
-                        console.error('Error writing DMX data:', err);
-                    }
-                });
-
-                setTimeout(sendFrame, FRAME_DELAY); // Repeat after a short delay
-            });
+    sendBreak(() => {
+      sendMarkAfterBreak(() => {
+        port!.write(dmxData, (err) => {
+          if (err) {
+            console.error("Error writing DMX data:", err);
+          }
         });
-    };
 
-    sendFrame(); // Start sending frames
+        setTimeout(sendFrame, FRAME_DELAY); // Repeat after a short delay
+      });
+    });
+  };
+
+  sendFrame(); // Start sending frames
 }
 
 // Send the DMX break signal
 function sendBreak(callback: () => void) {
-    if (!port) return;
+  if (!port) return;
 
-    port.set({ brk: true }, (err) => {
-        if (err) return console.error('Error during break:', err);
-        setTimeout(() => {
-            port!.set({ brk: false }, callback);
-        }, BREAK_DURATION / 1000);
-    });
+  port.set({ brk: true }, (err) => {
+    if (err) return console.error("Error during break:", err);
+    setTimeout(() => {
+      port!.set({ brk: false }, callback);
+    }, BREAK_DURATION / 1000);
+  });
 }
 
 // Send Mark After Break (MAB)
 function sendMarkAfterBreak(callback: () => void) {
-    setTimeout(callback, MAB_DURATION / 1000);
+  setTimeout(callback, MAB_DURATION / 1000);
 }
 
 // WebSocket server setup with Socket.IO
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-    // @ts-ignore
-    const server = res.socket?.server as HttpServer | undefined;
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse,
+) {
+  // @ts-ignore
+  const server = res.socket?.server as HttpServer | undefined;
 
-    if (!server) {
-        res.status(500).send('Server not found');
-        return;
-    }
+  if (!server) {
+    res.status(500).send("Server not found");
 
-    // Check if the Socket.IO server already exists
-    if (!server.io) {
-        const io = new SocketIOServer(server, {
-            path: '/api/socketio', // Custom path for Socket.IO
-            cors: {
-                origin: 'http://localhost:3000',
-                methods: ['GET', 'POST'],
-                allowedHeaders: ['Content-Type'],
-                credentials: true,
-            },
-        });
+    return;
+  }
 
-        // Updated connection handler
-        io.on('connection', (socket) => {
-            console.log('Socket.IO connection established', socket.id);
+  // Check if the Socket.IO server already exists
+  if (!server.io) {
+    const io = new SocketIOServer(server, {
+      path: "/api/socketio", // Custom path for Socket.IO
+      cors: {
+        origin: "http://localhost:3000",
+        methods: ["GET", "POST"],
+        allowedHeaders: ["Content-Type"],
+        credentials: true,
+      },
+    });
 
-            socket.on('disconnect', () => {
-                console.log('Socket.IO connection closed', socket.id);
-            });
+    // Updated connection handler
+    io.on("connection", (socket) => {
+      console.log("Socket.IO connection established", socket.id);
 
-            socket.on('dmxUpdate', (data: { channel: number; value: number }) => {
-                const { channel, value } = data;
-                
-                // Ensure channel is within valid range and value is valid
-                if (channel >= 0 && channel < DMX_CHANNELS && value >= 0 && value <= 255) {
-                    dmxData[channel] = value; // Update only the specific channel
-                } else {
-                    console.warn('Received invalid DMX channel or value:', channel, value);
-                }
-            });
-        });
+      socket.on("disconnect", () => {
+        console.log("Socket.IO connection closed", socket.id);
+      });
 
-        console.log('Socket.IO server started');
-        server.io = io; // Store the Socket.IO server instance on the HTTP server
-    }
+      socket.on("dmxUpdate", (data: { channel: number; value: number }) => {
+        const { channel, value } = data;
 
-    res.end();
+        // Ensure channel is within valid range and value is valid
+        if (
+          channel >= 0 &&
+          channel < DMX_CHANNELS &&
+          value >= 0 &&
+          value <= 255
+        ) {
+          dmxData[channel] = value; // Update only the specific channel
+        } else {
+          console.warn(
+            "Received invalid DMX channel or value:",
+            channel,
+            value,
+          );
+        }
+      });
+    });
 
-    // Start sending DMX if not already running
-    await sendDMX();
+    console.log("Socket.IO server started");
+    server.io = io; // Store the Socket.IO server instance on the HTTP server
+  }
+
+  res.end();
+
+  // Start sending DMX if not already running
+  await sendDMX();
 }

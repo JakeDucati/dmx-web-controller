@@ -1,5 +1,3 @@
 export default function Functions() {
-    return (
-        <div></div>
-    );
+  return <div />;
 }

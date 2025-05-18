@@ -21,7 +21,7 @@ const BREAK_DURATION = 176; // Break duration in microseconds
 const MAB_DURATION = 12; // Mark after break duration in microseconds
 const FRAME_DELAY = 1000 / UPDATE_RATE_HZ; // Time between frames in milliseconds
 
-let dmxData = new Uint8Array(DMX_CHANNELS).fill(0); // Initialize DMX data with zeros
+export let dmxData = new Uint8Array(DMX_CHANNELS).fill(0); // Initialize DMX data with zeros
 let port: SerialPort | null = null;
 
 // Initialize the serial port
@@ -50,26 +50,33 @@ async function initializePort() {
 }
 
 // Send DMX data in a loop
+let dmxLoopRunning = false;
+
 async function sendDMX() {
-  if (!port) await initializePort(); // Ensure port is initialized
+  if (dmxLoopRunning) return;
+  dmxLoopRunning = true;
+
+  if (!port) await initializePort();
 
   const sendFrame = () => {
-    if (!port || !port.isOpen) return; // Exit if the port is not open
+    if (!port || !port.isOpen) return;
 
     sendBreak(() => {
       sendMarkAfterBreak(() => {
         port!.write(dmxData, (err) => {
           if (err) {
             console.error("Error writing DMX data:", err);
+          } else {
+            // console.log("Sent DMX frame", dmxData.slice(70, 85));
           }
         });
 
-        setTimeout(sendFrame, FRAME_DELAY); // Repeat after a short delay
+        setTimeout(sendFrame, FRAME_DELAY);
       });
     });
   };
 
-  sendFrame(); // Start sending frames
+  sendFrame();
 }
 
 // Send the DMX break signal

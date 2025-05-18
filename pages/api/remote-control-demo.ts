@@ -162,34 +162,41 @@ export default allowCors(async function handler(req: NextApiRequest, res: NextAp
         dmxData[base + fixture.channels.red] = 255;
         dmxData[base + fixture.channels.green] = 255;
         dmxData[base + fixture.channels.blue] = 255;
+        dmxData[base + fixture.channels.speed] = 0;
         break;
       case 2: // Red
         dmxData[base + fixture.channels.dimmer] = 255;
         dmxData[base + fixture.channels.red] = 255;
+        dmxData[base + fixture.channels.speed] = 0;
         break;
       case 3: // Green
         dmxData[base + fixture.channels.dimmer] = 255;
         dmxData[base + fixture.channels.green] = 255;
+        dmxData[base + fixture.channels.speed] = 0;
         break;
       case 4: // Purple
         dmxData[base + fixture.channels.dimmer] = 255;
         dmxData[base + fixture.channels.red] = 128;
         dmxData[base + fixture.channels.blue] = 128;
+        dmxData[base + fixture.channels.speed] = 0;
         break;
       case 5: // Orange
         dmxData[base + fixture.channels.dimmer] = 255;
         dmxData[base + fixture.channels.red] = 255;
         dmxData[base + fixture.channels.green] = 165;
+        dmxData[base + fixture.channels.speed] = 0;
         break;
       case 6: // Pink
         dmxData[base + fixture.channels.dimmer] = 255;
         dmxData[base + fixture.channels.red] = 255;
         dmxData[base + fixture.channels.green] = 105;
         dmxData[base + fixture.channels.blue] = 180;
+        dmxData[base + fixture.channels.speed] = 0;
         break;
       case 7: // Blue
         dmxData[base + fixture.channels.dimmer] = 255;
         dmxData[base + fixture.channels.blue] = 255;
+        dmxData[base + fixture.channels.speed] = 0;
         break;
       case 8: // Rainbow (trigger effect channel)
         dmxData[base + fixture.channels.effect] = 108;
